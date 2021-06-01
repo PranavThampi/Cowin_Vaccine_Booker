@@ -12,7 +12,10 @@ class ApiCalls:
         self.headers = {"User-Agent": user_agent}
         self.district_file = "districts.json"
         if not os.path.exists(self.district_file) or not os.stat(self.district_file).st_size:
-            self.metadata_api()
+            self.districts = self.metadata_api()
+        else:
+            with open(self.district_file,'r') as file:
+                self.districts = json.load(file)
 
     def metadata_api(self):
         states_and_districts = []
@@ -40,6 +43,21 @@ class ApiCalls:
         with open(self.district_file,'w') as file:
             json.dump(states_and_districts, file, indent=4)
             file.close()
+        return states_and_districts
+
+    def find_by_pin(self, option):
+
+        if option == 1:
+            url = Websites.calender_by_pincode
+        elif option == 2:
+            url = Websites.session_by_pincode
+
+    def find_by_district(self,option):
+
+        if option == 1:
+            url = Websites.calender_by_district
+        elif option == 2:
+            url = Websites.session_by_district
 
 if __name__ == "__main__":
     ApiCalls()
