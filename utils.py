@@ -1,3 +1,4 @@
+from fake_useragent import UserAgent
 
 
 class Websites:
@@ -21,3 +22,7 @@ class Websites:
     # Appointment Scheduling and Cancelling
     schedule_appointment = f"{base_url}/appointment/schedule"
     cancel_appointment = f"{base_url}/appointment/cancel"
+    
+    # Headers for request
+    user_agent = UserAgent().random
+    headers = {"User-Agent": user_agent}
