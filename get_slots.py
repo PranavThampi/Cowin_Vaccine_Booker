@@ -4,7 +4,7 @@ import requests
 import os
 
 
-class ApiCalls:
+class Slots:
 
     def __init__(self):
         self.headers = Websites.headers
@@ -43,19 +43,31 @@ class ApiCalls:
             file.close()
         return states_and_districts
 
-    def find_by_pin(self, option):
-
-        if option == 1:
-            url = Websites.calender_by_pincode
-        elif option == 2:
-            url = Websites.session_by_pincode
-
-    def find_by_district(self,option):
-
-        if option == 1:
-            url = Websites.calender_by_district
-        elif option == 2:
-            url = Websites.session_by_district
-
+    def get_slots(self, district, date):
+        url = f"{Websites.calender_by_district}?district={district}&date={date}"
+        r = requests.get(url, headers=self.headers)
+        if r.ok:
+            with open("slots.json", "w") as file:
+                json.dump(r.json(), file, indent=5)
+                file.close()
+        pincodes = list(map(str,input("Enter the pincode(s) convenient for you seperated by space:".split())))
+        final_centers = []
+        centers = r.json()['centers']
+        for i in centers:
+            center = i
+            if center['pincode'] in pincodes:
+                sessions = center["sessions"]
+                filtered_sessions = []
+                for i in sessions:
+                    session = i
+                    if session["min_age_limit"] == 18 and session["available_capacity_dose1"] > 0:
+                        filtered_sessions.append(session)
+                if len(filtered_sessions) > 0:
+                    center["sessions"] = filtered_sessions
+                    final_centers.append(center)
+        with open("filtered_slots","w") as file:
+            json.dump(final_centers, file, indent=5)
+            file.close
+            
 if __name__ == "__main__":
-    ApiCalls()
+    Slots()

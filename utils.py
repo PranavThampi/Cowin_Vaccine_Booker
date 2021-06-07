@@ -23,6 +23,9 @@ class Websites:
     schedule_appointment = f"{base_url}/appointment/schedule"
     cancel_appointment = f"{base_url}/appointment/cancel"
     
+    # Get Beneficiaries
+    get_beneficiaries = f"{base_url}/appointment/beneficiaries"
+    
     # Headers for request
     user_agent = UserAgent().random
     headers = {"User-Agent": user_agent}

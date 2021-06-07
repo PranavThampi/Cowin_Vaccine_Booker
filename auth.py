@@ -33,7 +33,26 @@ class Authentication:
         }
         r = requests.post(url, data=data, headers=self.headers)
         if r.ok:
-            token = r.json()['token']
+            self.token = r.json()['token']
         else:
             print("OTP validation failed!")
-        return token
+        
+    def get_beneficiaries(self):
+        url = Websites.get_beneficiaries
+        r = requests.get(url, headers=self.headers, auth=(self.token))
+        if r.ok:
+            beneficiaries_list = r.json()["beneficiaries"]
+            beneficiary_list = {}
+            count = 1
+            if len(beneficiaries_list) > 1:
+                print("You have more than one beneficiary linked to this number. \nPlease select the beneficiary by selecting the number")
+                for beneficiaries in beneficiaries_list:
+                    beneficiary_list[count] = [beneficiaries['name'], beneficiaries['beneficiary_reference_id']]
+                    print(count,'-',beneficiaries['name'])
+                    count += 1
+                choice = int(input('Enter choice: '))
+                beneficary = beneficiary_list[choice]
+            else:
+                beneficiary = beneficiaries_list['beneficiary_reference_id']
+
+        return beneficiary
