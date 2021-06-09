@@ -68,6 +68,6 @@ class Slots:
         with open("filtered_slots","w") as file:
             json.dump(final_centers, file, indent=5)
             file.close
-            
+        return final_centers
 if __name__ == "__main__":
     Slots()
