@@ -12,7 +12,7 @@ class Slots:
         if not os.path.exists(self.district_file) or not os.stat(self.district_file).st_size:
             self.districts = self.metadata_api()
         else:
-            with open(self.district_file,'r') as file:
+            with open(self.district_file, 'r') as file:
                 self.districts = json.load(file)
 
     def metadata_api(self):
@@ -32,7 +32,7 @@ class Slots:
                     states_and_districts.append(state_info)
                 else:
                     print('Request to get districts failed! Error code:', r.status_code)
-            with open(self.district_file,'w') as file:
+            with open(self.district_file, 'w') as file:
                 json.dump(states_and_districts, file, indent=4)
                 file.close()
             return states_and_districts
@@ -46,7 +46,7 @@ class Slots:
             with open("slots.json", "w") as file:
                 json.dump(r.json(), file, indent=5)
                 file.close()
-        pincodes = list(map(str,input("Enter the pincode(s) convenient for you seperated by space:".split())))
+        pincodes = list(map(str, input("Enter the pincode(s) convenient for you separated by space:".split())))
         final_centers = []
         centers = r.json()['centers']
         for i in centers:
@@ -61,7 +61,7 @@ class Slots:
                 if len(filtered_sessions) > 0:
                     center["sessions"] = filtered_sessions
                     final_centers.append(center)
-        with open("filtered_slots","w") as file:
+        with open("filtered_slots", "w") as file:
             json.dump(final_centers, file, indent=5)
             file.close()
         return final_centers

@@ -8,6 +8,9 @@ class Authentication:
     def __init__(self, mobile):
         self.mobile = mobile
         self.headers = Websites.headers
+        self.generate_otp()
+        self.validate_otp()
+        self.get_beneficiaries()
 
     def generate_otp(self):
         url = Websites.generate_otp
