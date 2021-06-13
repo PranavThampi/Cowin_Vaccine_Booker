@@ -17,7 +17,6 @@ class Slots:
 
     def metadata_api(self):
         states_and_districts = []
-        all_states = {}
         state_url = Websites.states_list_url
         r = requests.get(state_url, headers=self.headers)
         if r.ok:
@@ -66,6 +65,7 @@ class Slots:
             json.dump(final_centers, file, indent=5)
             file.close()
         return final_centers
-    
+
+
 if __name__ == "__main__":
     Slots()
