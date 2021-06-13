@@ -23,25 +23,22 @@ class Slots:
         if r.ok:
             all_states = r.json()
             states = all_states["states"]
+            district_url = Websites.districts_list_url
+            for state in states:
+                state_info = state
+                url = district_url + '/' + str(state_info["state_id"])
+                r = requests.get(url, headers=self.headers)
+                if r.ok:
+                    state_info["districts"] = r.json()
+                    states_and_districts.append(state_info)
+                else:
+                    print('Request to get districts failed! Error code:', r.status_code)
+            with open(self.district_file,'w') as file:
+                json.dump(states_and_districts, file, indent=4)
+                file.close()
+            return states_and_districts
         else:
             print('Request to get states failed! Error code:', r.status_code)
-
-        district_url = Websites.districts_list_url
-        for state in states:
-            state_info = state
-            url = district_url + '/' + str(state_info["state_id"])
-
-            r = requests.get(url, headers=self.headers)
-            if r.ok:
-                state_info["districts"] = r.json()
-                states_and_districts.append(state_info)
-            else:
-                print('Request to get districts failed! Error code:', r.status_code)
-
-        with open(self.district_file,'w') as file:
-            json.dump(states_and_districts, file, indent=4)
-            file.close()
-        return states_and_districts
 
     def get_slots(self, district, date):
         url = f"{Websites.calender_by_district}?district={district}&date={date}"
@@ -67,7 +64,8 @@ class Slots:
                     final_centers.append(center)
         with open("filtered_slots","w") as file:
             json.dump(final_centers, file, indent=5)
-            file.close
+            file.close()
         return final_centers
+    
 if __name__ == "__main__":
     Slots()
