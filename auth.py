@@ -51,7 +51,7 @@ class Authentication:
                     print(count,'-',beneficiaries['name'])
                     count += 1
                 choice = int(input('Enter choice: '))
-                beneficary = beneficiary_list[choice]
+                beneficiary = beneficiary_list[choice]
             else:
                 beneficiary = beneficiaries_list['beneficiary_reference_id']
 
