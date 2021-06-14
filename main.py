@@ -3,7 +3,10 @@ import os
 import time
 
 from book_slot import BookSlots
+import ctypes
 
+kernel32 = ctypes.windll.kernel32
+kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 class Booking:
 
