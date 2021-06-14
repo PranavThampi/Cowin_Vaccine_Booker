@@ -1,0 +1,5 @@
+fake_useragent==0.1.11
+requests==2.25.1
+py_notifier==0.3.1
+termcolor==1.1.0
+colorama==0.4.4
