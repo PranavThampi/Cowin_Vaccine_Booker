@@ -1,5 +1,8 @@
 import json
 import os
+import time
+
+from book_slot import BookSlots
 
 
 class Booking:
@@ -14,6 +17,7 @@ class Booking:
                 "\033[1;31mN\033[0m for no:")
             if choice.lower() == 'y':
                 self.preferences()
+        self.initiate_booking()
 
     @staticmethod
     def preferences():
@@ -33,7 +37,7 @@ class Booking:
                     cond = False
 
         print("\nPlease select the time frame suitable for you. Press the corresponding number followed by enter key.")
-        day_part_choice = int(input("\n1. Morning(9am-12pm)\n2. Afternoon(12pm-5pm)\n3. Evening(5pm-11pm)\nChoice:"))
+        # day_part_choice = int(input("\n1. Morning(9am-12pm)\n2. Afternoon(12pm-5pm)\n3. Evening(5pm-11pm)\nChoice:"))
         age = input("\nEnter your age in years:")
         if '18' < age < '45':
             age = 18
@@ -51,13 +55,21 @@ class Booking:
         preferences = {
             'district': district,
             'pincodes': pincodes,
-            'day_part_choice': day_part_choice,
+            # 'day_part_choice': day_part_choice,
             'age': age,
             'mobile': mobile
         }
         with open("preferences.json", 'w') as file:
             json.dump(preferences, file, indent=3)
             file.close()
+
+    @staticmethod
+    def initiate_booking():
+        while True:
+            booking = BookSlots()
+            if booking.book_slots():
+                break
+            time.sleep(10)
 
 
 if __name__ == '__main__':

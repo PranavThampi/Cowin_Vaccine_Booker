@@ -1,6 +1,8 @@
 from utils import Websites
 import requests
 import hashlib
+import json
+import notify
 
 
 class Authentication:
@@ -8,9 +10,9 @@ class Authentication:
     def __init__(self, mobile):
         self.mobile = mobile
         self.headers = Websites.headers
-        self.generate_otp()
-        self.validate_otp()
-        self.get_beneficiaries()
+        if self.generate_otp():
+            self.validate_otp()
+            self.get_beneficiaries()
 
     def generate_otp(self):
         url = Websites.generate_otp
@@ -18,11 +20,13 @@ class Authentication:
             "mobile": self.mobile,
             "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
         }
-        r = requests.post(url,data=data, headers=self.headers)
+        r = requests.post(url, json=data, headers=self.headers)
         if r.ok:
             self.txn_id = r.json()['txnId']
+            notify.notify("Please enter your OTP in the terminal window!!!")
+            return True
         else:
-            print("Error in generating OTP!")
+            print("Error in generating OTP!", r.json())
 
     def validate_otp(self):
         otp = input("Enter your otp:")
@@ -31,31 +35,38 @@ class Authentication:
 
         url = Websites.validate_otp
         data = {
-            "txnID": self.txn_id,
-            "otp": encoded_otp
+            "otp": encoded_otp,
+            "txnId": self.txn_id
         }
-        r = requests.post(url, data=data, headers=self.headers)
+        r = requests.post(url, json=data, headers=self.headers)
         if r.ok:
             self.token = r.json()['token']
         else:
-            print("OTP validation failed!")
-        
+            print("OTP validation failed!", r.json())
+
     def get_beneficiaries(self):
         url = Websites.get_beneficiaries
-        r = requests.get(url, headers=self.headers, auth=(self.token))
+        self.headers['Authorization'] = f"Bearer {self.token}"
+        r = requests.get(url, headers=self.headers)
         if r.ok:
-            beneficiaries_list = r.json()["beneficiaries"]
-            beneficiary_list = {}
+            with open("beneficiary.json", "w") as file:
+                json.dump(r.json()['beneficiaries'], file, indent=4)
+                file.close()
+
+            beneficiaries_list = r.json()['beneficiaries']
             count = 1
             if len(beneficiaries_list) > 1:
-                print("You have more than one beneficiary linked to this number. \nPlease select the beneficiary by selecting the number")
+                beneficiary_list = {}
+                print(
+                    "You have more than one beneficiary linked to this number. \nPlease select the beneficiary by "
+                    "selecting the number")
                 for beneficiaries in beneficiaries_list:
                     beneficiary_list[count] = [beneficiaries['name'], beneficiaries['beneficiary_reference_id']]
-                    print(count,'-',beneficiaries['name'])
+                    print(count, '-', beneficiaries['name'])
                     count += 1
                 choice = int(input('Enter choice: '))
-                beneficiary = beneficiary_list[choice]
+                self.beneficiary = beneficiary_list[choice]
             else:
-                beneficiary = beneficiaries_list['beneficiary_reference_id']
-
-        return beneficiary
+                self.beneficiary = [beneficiaries_list[0]['name'], beneficiaries_list[0]['beneficiary_reference_id']]
+        else:
+            print("Could not fetch beneficiaries!!", r.text)

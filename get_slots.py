@@ -39,14 +39,14 @@ class Slots:
         else:
             print('Request to get states failed! Error code:', r.status_code)
 
-    def get_slots(self, district, date):
+    def get_slots(self, district, date, pincodes):
         url = f"{Websites.calender_by_district}?district={district}&date={date}"
         r = requests.get(url, headers=self.headers)
         if r.ok:
             with open("slots.json", "w") as file:
                 json.dump(r.json(), file, indent=5)
                 file.close()
-        pincodes = list(map(str, input("Enter the pincode(s) convenient for you separated by space:".split())))
+
         final_centers = []
         centers = r.json()['centers']
         for i in centers:

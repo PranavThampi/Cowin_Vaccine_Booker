@@ -1,9 +1,9 @@
 from pynotifier import Notification
 
 
-def notify(self):
+def notify(description):
     Notification(
         title="Cowin Vaccine Booker",
-        description="Kindly enter your OTP in the command prompt/terminal window!",
+        description=description,
         urgency="critical"
     ).send()
