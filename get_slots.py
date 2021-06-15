@@ -39,7 +39,7 @@ class Slots:
         else:
             print('Request to get states failed! Error code:', r.status_code)
 
-    def get_slots(self, district, date, pincodes):
+    def get_slots(self, district, date, pincodes, vaccine, dose, age):
         url = f"{Websites.calender_by_district}?district={district}&date={date}"
         r = requests.get(url, headers=self.headers)
         if r.ok:
@@ -54,9 +54,10 @@ class Slots:
             if center['pincode'] in pincodes:
                 sessions = center["sessions"]
                 filtered_sessions = []
-                for i in sessions:
-                    session = i
-                    if session["min_age_limit"] == 18 and session["available_capacity_dose1"] > 0:
+                for j in sessions:
+                    session = j
+                    if session["min_age_limit"] == age and session[dose] > 0 \
+                            and session['vaccine'] == vaccine:
                         filtered_sessions.append(session)
                 if len(filtered_sessions) > 0:
                     center["sessions"] = filtered_sessions

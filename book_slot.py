@@ -16,7 +16,14 @@ class BookSlots:
         self.pincode = pref['pincode']
         # self.time_pref = pref['day_part_choice']
         self.date = date.today()
-        self.centers = Slots().get_slots(self.district, self.date, self.pincode)
+        self.vaccine = pref['vaccine']
+        self.dose = pref['dose']
+        if self.dose == 1:
+            dose = 'available_capacity_dose1'
+        else:
+            dose = 'available_capacity_dose1'
+        self.age = pref['age']
+        self.centers = Slots().get_slots(self.district, self.date, self.pincode, self.vaccine, dose, self.age)
         self.mobile = pref['mobile']
         if self.centers:
             auth = Authentication(self.mobile)

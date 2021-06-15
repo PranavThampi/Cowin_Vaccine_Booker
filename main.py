@@ -55,12 +55,18 @@ class Booking:
                 print("\033[1;31mIncorrect number. Please enter again\033[0m")
             else:
                 break
+        print("Please select your vaccine preference!")
+        vaccine_choice = int(input("Press 1 for Covishield and 2 for Covaxin:"))
+        vaccine = 'COVISHIELD' if vaccine_choice == 1 else 'COVAXIN'
+        dose = int(input('Press 1 for first dose and 2 for second dose'))
         preferences = {
             'district': district,
             'pincodes': pincodes,
             # 'day_part_choice': day_part_choice,
             'age': age,
-            'mobile': mobile
+            'mobile': mobile,
+            'vaccine': vaccine,
+            'dose': dose
         }
         with open("preferences.json", 'w') as file:
             json.dump(preferences, file, indent=3)
