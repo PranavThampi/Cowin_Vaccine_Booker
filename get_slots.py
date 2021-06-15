@@ -66,7 +66,3 @@ class Slots:
             json.dump(final_centers, file, indent=5)
             file.close()
         return final_centers
-
-
-if __name__ == "__main__":
-    Slots()
