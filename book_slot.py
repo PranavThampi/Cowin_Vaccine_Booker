@@ -1,7 +1,7 @@
 from utils import Websites
 from get_slots import Slots
 import json
-from datetime import date
+from datetime import date, datetime
 import notify
 from auth import Authentication
 import requests
@@ -13,9 +13,13 @@ class BookSlots:
             pref = json.load(file)
             file.close()
         self.district = pref['district']
-        self.pincode = pref['pincode']
+        self.pincode = pref['pincodes']
         # self.time_pref = pref['day_part_choice']
-        self.date = date.today()
+        ip_date = datetime.strptime(pref['date'], "%d-%m-%Y").date()
+        if ip_date < date.today():
+            self.date = date.today()
+        else:
+            self.date = ip_date
         self.vaccine = pref['vaccine']
         self.dose = pref['dose']
         if self.dose == 1:

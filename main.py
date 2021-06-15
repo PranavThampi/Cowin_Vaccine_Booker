@@ -1,9 +1,10 @@
 import json
 import os
 import time
+import ctypes
 
 from book_slot import BookSlots
-import ctypes
+from get_slots import Slots
 
 kernel32 = ctypes.windll.kernel32
 kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
@@ -11,6 +12,7 @@ kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 class Booking:
 
     def __init__(self):
+        Slots()
         print('\033[92m', '*' * 8, 'Welcome to Cowin Vaccine Booker', '*' * 8, '\033[0m')
         if not os.path.exists('preferences.json'):
             self.preferences()
@@ -33,32 +35,36 @@ class Booking:
             pincodes = list(map(str, input("\nEnter the pincode(s) convenient for you seperated by space:").split()))
             for x in pincodes:
                 if len(x) is not 6:
-                    print("Incorrect pincode. Please enter again")
+                    print("Incorrect pincode! Please enter again")
                     cond = True
                     break
                 else:
                     cond = False
 
-        print("\nPlease select the time frame suitable for you. Press the corresponding number followed by enter key.")
+        # print("\nPlease select the time frame suitable for you. Press the corresponding number followed by enter key.")
         # day_part_choice = int(input("\n1. Morning(9am-12pm)\n2. Afternoon(12pm-5pm)\n3. Evening(5pm-11pm)\nChoice:"))
         age = input("\nEnter your age in years:")
-        if '18' < age < '45':
-            age = 18
-        elif age > '45':
-            age = 45
-        else:
-            print("Invalid age entered:")
+        while True:
+            if '18' <= age < '45':
+                age = 18
+                break
+            elif age >= '45':
+                age = 45
+                break
+            else:
+                print("Invalid age entered:")
 
         while True:
-            mobile = input("Enter your 10 digit mobile number")
+            mobile = input("\nEnter your 10 digit mobile number:")
             if len(mobile) is not 10 and not int(mobile):
                 print("\033[1;31mIncorrect number. Please enter again\033[0m")
             else:
                 break
-        print("Please select your vaccine preference!")
-        vaccine_choice = int(input("Press 1 for Covishield and 2 for Covaxin:"))
+        print("\nPlease select your vaccine preference!")
+        vaccine_choice = int(input("\nPress 1 for Covishield and 2 for Covaxin:"))
         vaccine = 'COVISHIELD' if vaccine_choice == 1 else 'COVAXIN'
-        dose = int(input('Press 1 for first dose and 2 for second dose'))
+        dose = int(input('\nPress 1 for first dose and 2 for second dose:'))
+        date = input("\nEnter the start date for search in DD-MM-YYYY format:")
         preferences = {
             'district': district,
             'pincodes': pincodes,
@@ -66,7 +72,8 @@ class Booking:
             'age': age,
             'mobile': mobile,
             'vaccine': vaccine,
-            'dose': dose
+            'dose': dose,
+            'date': date
         }
         with open("preferences.json", 'w') as file:
             json.dump(preferences, file, indent=3)
@@ -75,6 +82,7 @@ class Booking:
     @staticmethod
     def initiate_booking():
         while True:
+            print('Sending Request!')
             booking = BookSlots()
             if booking.book_slots():
                 break

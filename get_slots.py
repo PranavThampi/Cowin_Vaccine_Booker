@@ -40,29 +40,31 @@ class Slots:
             print('Request to get states failed! Error code:', r.status_code)
 
     def get_slots(self, district, date, pincodes, vaccine, dose, age):
-        url = f"{Websites.calender_by_district}?district={district}&date={date}"
+        url = f"{Websites.calender_by_district}?district_id={district}&date={date}"
         r = requests.get(url, headers=self.headers)
         if r.ok:
             with open("slots.json", "w") as file:
                 json.dump(r.json(), file, indent=5)
                 file.close()
 
-        final_centers = []
-        centers = r.json()['centers']
-        for i in centers:
-            center = i
-            if center['pincode'] in pincodes:
-                sessions = center["sessions"]
-                filtered_sessions = []
-                for j in sessions:
-                    session = j
-                    if session["min_age_limit"] == age and session[dose] > 0 \
-                            and session['vaccine'] == vaccine:
-                        filtered_sessions.append(session)
-                if len(filtered_sessions) > 0:
-                    center["sessions"] = filtered_sessions
-                    final_centers.append(center)
-        with open("filtered_slots", "w") as file:
-            json.dump(final_centers, file, indent=5)
-            file.close()
-        return final_centers
+            final_centers = []
+            centers = r.json()['centers']
+            for i in centers:
+                center = i
+                if center['pincode'] in pincodes:
+                    sessions = center["sessions"]
+                    filtered_sessions = []
+                    for j in sessions:
+                        session = j
+                        if session["min_age_limit"] == age and session[dose] > 0 \
+                                and session['vaccine'] == vaccine:
+                            filtered_sessions.append(session)
+                    if len(filtered_sessions) > 0:
+                        center["sessions"] = filtered_sessions
+                        final_centers.append(center)
+            with open("filtered_slots", "w") as file:
+                json.dump(final_centers, file, indent=5)
+                file.close()
+            return final_centers
+        else:
+            print("Could not get slots!!", r.json())
